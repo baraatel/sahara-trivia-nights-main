@@ -1,0 +1,167 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Eye-friendly color system with warm, muted tones */
+
+@layer base {
+  :root {
+    /* Light mode - Warm, soft colors */
+    --background: 32 25% 97%; /* Soft cream */
+    --foreground: 215 25% 27%; /* Warm dark grey */
+
+    --card: 30 40% 98%; /* Soft white with warm undertone */
+    --card-foreground: 215 25% 27%;
+
+    --popover: 30 40% 98%;
+    --popover-foreground: 215 25% 27%;
+
+    --primary: 150 25% 50%; /* Sage green */
+    --primary-foreground: 30 40% 98%;
+
+    --secondary: 30 15% 90%; /* Warm light grey */
+    --secondary-foreground: 215 25% 27%;
+
+    --muted: 30 20% 93%; /* Soft muted background */
+    --muted-foreground: 215 15% 45%; /* Medium grey */
+
+    --accent: 25 35% 65%; /* Warm terracotta */
+    --accent-foreground: 30 40% 98%;
+
+    --destructive: 0 50% 60%; /* Muted red */
+    --destructive-foreground: 30 40% 98%;
+
+    --border: 30 25% 85%; /* Soft border */
+    --input: 30 25% 88%; /* Warm input background */
+    --ring: 150 25% 50%; /* Sage green ring */
+
+    --radius: 0.5rem;
+
+    /* Sidebar colors */
+    --sidebar-background: 30 35% 96%; /* Warm sidebar background */
+    --sidebar-foreground: 215 25% 35%;
+    --sidebar-primary: 150 25% 45%; /* Sage green */
+    --sidebar-primary-foreground: 30 40% 98%;
+    --sidebar-accent: 30 25% 92%; /* Soft accent */
+    --sidebar-accent-foreground: 215 25% 35%;
+    --sidebar-border: 30 25% 88%;
+    --sidebar-ring: 150 25% 50%;
+    
+    /* Sidebar width variables */
+    --sidebar-width: 16rem;
+    --sidebar-width-icon: 3rem;
+  }
+
+  .dark {
+    /* Dark mode - Warm, deep colors */
+    --background: 220 25% 12%; /* Warm dark navy */
+    --foreground: 35 25% 92%; /* Soft cream text */
+
+    --card: 220 25% 14%; /* Slightly lighter card */
+    --card-foreground: 35 25% 92%;
+
+    --popover: 220 25% 14%;
+    --popover-foreground: 35 25% 92%;
+
+    --primary: 150 30% 55%; /* Brighter sage for dark mode */
+    --primary-foreground: 220 25% 12%;
+
+    --secondary: 220 20% 18%; /* Warm dark secondary */
+    --secondary-foreground: 35 25% 85%;
+
+    --muted: 220 20% 16%; /* Muted dark background */
+    --muted-foreground: 215 15% 65%; /* Medium light grey */
+
+    --accent: 25 40% 58%; /* Warm terracotta for dark */
+    --accent-foreground: 35 25% 92%;
+
+    --destructive: 0 45% 55%; /* Muted red for dark */
+    --destructive-foreground: 35 25% 92%;
+
+    --border: 220 20% 20%; /* Subtle border */
+    --input: 220 20% 18%; /* Dark input */
+    --ring: 150 30% 55%;
+
+    /* Dark sidebar colors */
+    --sidebar-background: 220 25% 10%; /* Deep sidebar */
+    --sidebar-foreground: 35 25% 88%;
+    --sidebar-primary: 150 30% 55%;
+    --sidebar-primary-foreground: 220 25% 10%;
+    --sidebar-accent: 220 20% 15%;
+    --sidebar-accent-foreground: 35 25% 88%;
+    --sidebar-border: 220 20% 18%;
+    --sidebar-ring: 150 30% 55%;
+    
+    /* Sidebar width variables */
+    --sidebar-width: 16rem;
+    --sidebar-width-icon: 3rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* Smooth transitions for theme changes */
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Enhanced focus styles for accessibility */
+  *:focus-visible {
+    @apply ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar for better aesthetics */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+/* Additional utility classes for the new color scheme */
+@layer utilities {
+  .gradient-warm {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+  }
+
+  .gradient-dark {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--card)) 100%);
+  }
+
+  .text-warm {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .bg-warm {
+    background-color: hsl(var(--muted));
+  }
+  
+  /* RTL support for sidebar */
+  [dir="rtl"] .sidebar-rtl {
+    direction: rtl;
+  }
+  
+  [dir="rtl"] .sidebar-rtl * {
+    direction: rtl;
+  }
+}
