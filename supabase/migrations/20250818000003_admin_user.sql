@@ -7,8 +7,7 @@ VALUES (
   'admin',
   'System Administrator',
   now()
-) ON CONFLICT (id) DO UPDATE SET
-  email = 'admin@gmail.com',
+) ON CONFLICT (email) DO UPDATE SET
   username = 'admin',
   full_name = 'System Administrator';
 

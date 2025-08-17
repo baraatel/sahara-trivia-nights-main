@@ -1,13 +1,11 @@
 
-import { Users, BarChart3, FolderOpen, HelpCircle, CreditCard, Package, Gift, Menu, X } from "lucide-react";
+import { Users, BarChart3, FolderOpen, HelpCircle, CreditCard, Package, Gift, Menu, X, ShoppingCart, TrendingUp } from "lucide-react";
 import {
-  Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
   useSidebar,
@@ -40,7 +38,9 @@ const AdminSidebar = ({ activeTab, setActiveTab, language, onLanguageChange }: A
       questions: "الأسئلة",
       paymentSettings: "إعدادات الدفع",
       orderMonitoring: "مراقبة الطلبات",
-      redemptionCodes: "أكواد الاسترداد"
+      redemptionCodes: "أكواد الاسترداد",
+      packageManagement: "إدارة الحزم",
+      packageStats: "إحصائيات الحزم"
     },
     en: {
       adminPanel: "Admin Panel",
@@ -54,7 +54,9 @@ const AdminSidebar = ({ activeTab, setActiveTab, language, onLanguageChange }: A
       questions: "Questions",
       paymentSettings: "Payment Settings",
       orderMonitoring: "Order Monitoring",
-      redemptionCodes: "Redemption Codes"
+      redemptionCodes: "Redemption Codes",
+      packageManagement: "Package Management",
+      packageStats: "Package Statistics"
     }
   };
 
@@ -82,6 +84,16 @@ const AdminSidebar = ({ activeTab, setActiveTab, language, onLanguageChange }: A
       icon: HelpCircle,
     },
     {
+      id: "packages",
+      title: t.packageManagement,
+      icon: ShoppingCart,
+    },
+    {
+      id: "package-stats",
+      title: t.packageStats,
+      icon: TrendingUp,
+    },
+    {
       id: "payments",
       title: t.paymentSettings,
       icon: CreditCard,
@@ -99,7 +111,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, language, onLanguageChange }: A
   ];
 
   return (
-    <div className={`border-l border-r-0 rtl:border-r rtl:border-l-0 bg-white dark:bg-gray-900 shadow-sm h-full ${language === 'ar' ? 'sidebar-rtl' : ''}`}>
+    <div className={`${isCollapsed ? 'w-16' : 'w-64'} border-l border-r-0 rtl:border-r rtl:border-l-0 bg-white dark:bg-gray-900 shadow-sm h-full transition-all duration-300 ${language === 'ar' ? 'sidebar-rtl' : ''}`}>
       <SidebarHeader className="border-b dark:border-gray-700 p-4">
         <div className="flex items-center justify-between mb-4">
           {!isCollapsed && (
@@ -136,19 +148,19 @@ const AdminSidebar = ({ activeTab, setActiveTab, language, onLanguageChange }: A
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    isActive={activeTab === item.id}
+                  <Button
+                    variant="ghost"
                     onClick={() => setActiveTab(item.id)}
                     className={`w-full justify-start transition-colors ${
                       activeTab === item.id 
                         ? "bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100" 
                         : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
                     }`}
-                    tooltip={isCollapsed ? item.title : undefined}
+                    title={isCollapsed ? item.title : undefined}
                   >
                     <item.icon className="h-4 w-4" />
-                    {!isCollapsed && <span>{item.title}</span>}
-                  </SidebarMenuButton>
+                    {!isCollapsed && <span className="ml-2">{item.title}</span>}
+                  </Button>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

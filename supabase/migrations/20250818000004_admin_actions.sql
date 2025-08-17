@@ -82,7 +82,7 @@ FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Admin can manage all refund requests" ON public.refund_requests
 FOR ALL USING (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );
 
 -- RLS policies for issue_reports
@@ -94,24 +94,24 @@ FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Admin can manage all issue reports" ON public.issue_reports
 FOR ALL USING (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );
 
 -- RLS policies for user_violations
 CREATE POLICY "Admin can manage user violations" ON public.user_violations
 FOR ALL USING (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );
 
 -- RLS policies for admin_actions
 CREATE POLICY "Admin can view admin actions" ON public.admin_actions
 FOR SELECT USING (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );
 
 CREATE POLICY "Admin can create admin actions" ON public.admin_actions
 FOR INSERT WITH CHECK (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );
 
 -- RLS policies for user_notifications
@@ -123,7 +123,7 @@ FOR UPDATE USING (auth.uid() = user_id);
 
 CREATE POLICY "Admin can manage all notifications" ON public.user_notifications
 FOR ALL USING (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );
 
 -- Add function to check if refund is within 24 hours
@@ -161,21 +161,21 @@ $$;
 -- Allow admin to update and delete user purchases
 CREATE POLICY "Admin can update user purchases" ON public.user_game_purchases
 FOR UPDATE USING (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );
 
 CREATE POLICY "Admin can delete user purchases" ON public.user_game_purchases
 FOR DELETE USING (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );
 
 -- Allow admin to update and delete code redemptions
 CREATE POLICY "Admin can update code redemptions" ON public.code_redemptions
 FOR UPDATE USING (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );
 
 CREATE POLICY "Admin can delete code redemptions" ON public.code_redemptions
 FOR DELETE USING (
-  EXISTS (SELECT 1 FROM users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM public.users WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com')
 );

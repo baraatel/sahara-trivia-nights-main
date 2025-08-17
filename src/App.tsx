@@ -19,6 +19,12 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import BuyGame from "./pages/BuyGame";
 import SelectCategories from "./pages/SelectCategories";
+import JoinGame from "./pages/JoinGame";
+import CreateTeam from "./pages/CreateTeam";
+import JoinTeam from "./pages/JoinTeam";
+import TeamGame from "./pages/TeamGame";
+import CreateTeamGame from "./pages/CreateTeamGame";
+import StartGame from "./pages/StartGame";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +57,12 @@ const App = () => {
                       <Route path="/admin" element={<Admin language={language} onLanguageChange={setLanguage} />} />
                       <Route path="/buy-game" element={<BuyGame language={language} onLanguageChange={setLanguage} />} />
                       <Route path="/select-categories/:purchaseId" element={<SelectCategories language={language} onLanguageChange={setLanguage} />} />
+                      <Route path="/join-game" element={<JoinGame language={language} onLanguageChange={setLanguage} />} />
+                      <Route path="/create-team" element={<CreateTeam language={language} onLanguageChange={setLanguage} />} />
+                      <Route path="/join-team" element={<JoinTeam language={language} onLanguageChange={setLanguage} />} />
+                      <Route path="/team-game/:teamId" element={<TeamGame language={language} onLanguageChange={setLanguage} />} />
+                      <Route path="/create-team-game/:purchaseId" element={<CreateTeamGame language={language} onLanguageChange={setLanguage} />} />
+                      <Route path="/start-game/:purchaseId" element={<StartGame language={language} onLanguageChange={setLanguage} />} />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Layout>

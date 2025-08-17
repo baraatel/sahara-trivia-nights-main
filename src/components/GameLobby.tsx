@@ -12,7 +12,7 @@ import QuizGame from "./QuizGame";
 
 interface GameLobbyProps {
   category: any;
-  gameMode: 'single' | 'multi';
+  gameMode: 'single' | 'multi' | 'team';
   language: 'ar' | 'en';
   onBack: () => void;
 }

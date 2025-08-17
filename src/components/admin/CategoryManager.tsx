@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Edit, Trash2, Save, X } from "lucide-react";
+import { Plus, Edit, Trash2, Save, X, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const CategoryManager = () => {
@@ -38,7 +38,25 @@ const CategoryManager = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setCategories(data || []);
+      
+      // Get question count for each category
+      const categoriesWithQuestionCount = await Promise.all(
+        (data || []).map(async (category) => {
+          const { count: questionCount, error: countError } = await supabase
+            .from('questions')
+            .select('*', { count: 'exact', head: true })
+            .eq('category_id', category.id);
+          
+          if (countError) {
+            console.error('Error fetching question count for category:', category.id, countError);
+            return { ...category, question_count: 0 };
+          }
+          
+          return { ...category, question_count: questionCount || 0 };
+        })
+      );
+      
+      setCategories(categoriesWithQuestionCount);
     } catch (error) {
       toast({
         title: "Error",
@@ -267,6 +285,10 @@ const CategoryManager = () => {
                   <div className="flex gap-4 text-sm">
                     <span className={`px-2 py-1 rounded ${category.is_free ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
                       {category.is_free ? 'Free' : `$${category.price}`}
+                    </span>
+                    <span className="px-2 py-1 rounded bg-purple-100 text-purple-800 flex items-center gap-1">
+                      <HelpCircle className="h-3 w-3" />
+                      {category.question_count || 0} Questions
                     </span>
                     <span className="text-gray-500">
                       Created: {new Date(category.created_at).toLocaleDateString()}

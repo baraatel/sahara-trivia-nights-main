@@ -22,24 +22,24 @@ const QuestionActions = ({
 }: QuestionActionsProps) => {
   return (
     <div className="flex justify-between items-center mb-6">
-      <h2 className="text-2xl font-bold">Question Management</h2>
+      <h2 className="text-2xl font-bold">إدارة الأسئلة</h2>
       <div className="flex gap-4">
         <Select value={selectedCategory || "all"} onValueChange={(value) => setSelectedCategory(value === "all" ? "" : value)}>
           <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filter by category" />
+            <SelectValue placeholder="تصفية حسب الفئة" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="all">جميع الفئات</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
-                {category.name_en}
+                {category.name_ar}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Button onClick={downloadTemplate} variant="outline" className="flex items-center gap-2">
           <Download className="h-4 w-4" />
-          Download Template
+          تحميل القالب
         </Button>
         <div>
           <input
@@ -51,7 +51,7 @@ const QuestionActions = ({
           />
           <Button onClick={() => document.getElementById('csv-upload')?.click()} variant="outline" className="flex items-center gap-2">
             <Upload className="h-4 w-4" />
-            Import CSV
+            استيراد CSV
           </Button>
         </div>
         <Button 
@@ -59,7 +59,7 @@ const QuestionActions = ({
           className="flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
-          Add Question
+          إضافة سؤال
         </Button>
       </div>
     </div>

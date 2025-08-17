@@ -80,9 +80,9 @@ ALTER TABLE public.redemption_codes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admin can manage redemption codes" ON public.redemption_codes
 FOR ALL USING (
   EXISTS (
-    SELECT 1 FROM users 
-    WHERE users.id = auth.uid() 
-    AND users.email = 'admin@gmail.com'
+    SELECT 1 FROM auth.users 
+    WHERE auth.users.id = auth.uid() 
+    AND auth.users.email = 'admin@gmail.com'
   )
 );
 
@@ -111,9 +111,9 @@ FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Admin can view all redemptions" ON public.code_redemptions
 FOR SELECT USING (
   EXISTS (
-    SELECT 1 FROM users 
-    WHERE users.id = auth.uid() 
-    AND users.email = 'admin@gmail.com'
+    SELECT 1 FROM auth.users 
+    WHERE auth.users.id = auth.uid() 
+    AND auth.users.email = 'admin@gmail.com'
   )
 );
 
@@ -121,8 +121,8 @@ FOR SELECT USING (
 CREATE OR REPLACE VIEW public.leaderboard AS
 SELECT 
   u.id,
-  u.username,
-  u.full_name,
+  u.email as username,
+  COALESCE(u.raw_user_meta_data->>'full_name', u.email) as full_name,
   us.total_score,
   us.games_played,
   us.correct_answers,
@@ -133,7 +133,7 @@ SELECT
     ELSE 0
   END as accuracy_percentage,
   ROW_NUMBER() OVER (ORDER BY us.total_score DESC) as rank
-FROM users u
+FROM auth.users u
 LEFT JOIN user_stats us ON u.id = us.user_id
 WHERE us.total_score > 0
 ORDER BY us.total_score DESC;

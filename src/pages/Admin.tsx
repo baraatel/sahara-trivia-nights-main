@@ -7,6 +7,8 @@ import AdminSidebar from "@/components/admin/AdminSidebar";
 import UserManagement from "@/components/admin/UserManagement";
 import CategoryManager from "@/components/admin/CategoryManager";
 import QuestionManager from "@/components/admin/QuestionManager";
+import PackageManager from "@/components/admin/PackageManager";
+import PackageStats from "@/components/admin/PackageStats";
 import FinancialDashboard from "@/components/admin/FinancialDashboard";
 import OrderMonitoring from "@/components/admin/OrderMonitoring";
 import RedemptionCodeManager from "@/components/admin/RedemptionCodeManager";
@@ -44,9 +46,22 @@ const Admin = ({ language, onLanguageChange }: AdminProps) => {
         return;
       }
 
-      // Check if user is admin by email (since there's no admins table)
-      // You can modify this logic based on your admin system
-      const isUserAdmin = user.email === 'admin@gmail.com';
+      // Check if user is admin using the new safe function
+      const { data: adminStatus, error } = await supabase
+        .rpc('is_admin_user');
+
+      if (error) {
+        console.error('Error fetching user data:', error);
+        setIsAdmin(false);
+        toast({
+          title: language === 'ar' ? "خطأ" : "Error",
+          description: language === 'ar' ? "فشل في التحقق من صلاحية الإدارة" : "Failed to check admin access",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const isUserAdmin = adminStatus === true;
       setIsAdmin(isUserAdmin);
       
       if (!isUserAdmin) {
@@ -92,6 +107,10 @@ const Admin = ({ language, onLanguageChange }: AdminProps) => {
         return <CategoryManager />;
       case "questions":
         return <QuestionManager />;
+      case "packages":
+        return <PackageManager />;
+      case "package-stats":
+        return <PackageStats />;
       case "financial":
         return <FinancialDashboard />;
       case "stats":
@@ -104,6 +123,7 @@ const Admin = ({ language, onLanguageChange }: AdminProps) => {
         return <PaymentSettings />;
       case "game-stats":
         return <GameStats />;
+
       default:
         return <UserManagement />;
     }

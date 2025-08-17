@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
@@ -107,17 +106,21 @@ const Profile = ({ language, onLanguageChange }: ProfileProps) => {
 
       setUser(userData);
 
-      // Fetch user stats
+      // Fetch user stats using the safe function
       const { data: statsData, error: statsError } = await supabase
-        .from('user_stats')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
+        .rpc('get_user_stats_safe', { user_uuid: session.user.id });
 
-      if (statsError && statsError.code !== 'PGRST116') {
+      if (statsError) {
         console.error('Error fetching stats:', statsError);
+        // Don't show error toast for stats, just set default values
+        setUserStats({
+          games_played: 0,
+          total_score: 0,
+          correct_answers: 0,
+          questions_answered: 0
+        });
       } else {
-        setUserStats(statsData || {
+        setUserStats(statsData?.[0] || {
           games_played: 0,
           total_score: 0,
           correct_answers: 0,
@@ -269,19 +272,18 @@ const Profile = ({ language, onLanguageChange }: ProfileProps) => {
   };
 
   return (
-    <SidebarProvider>
-      <div className={`min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex w-full ${language === 'ar' ? 'rtl' : 'ltr'}`} dir={language === 'ar' ? 'rtl' : 'ltr'}>
-        <ProfileSidebar 
-          activeTab={activeTab} 
-          setActiveTab={setActiveTab}
-          language={language}
-          onLanguageChange={onLanguageChange}
-        />
-        
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b dark:border-gray-700 px-4 bg-white dark:bg-gray-900">
-            <SidebarTrigger className="-ml-1 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300" />
-            <div className="flex items-center gap-2">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      <ProfileSidebar 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab}
+        language={language}
+        onLanguageChange={onLanguageChange}
+      />
+      
+      <div className="flex-1 overflow-auto">
+        <header className="border-b bg-white dark:bg-gray-800 dark:border-gray-700 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user.avatar_url} alt={user.full_name} />
                 <AvatarFallback className="text-sm">{getInitials(user.full_name)}</AvatarFallback>
@@ -291,9 +293,10 @@ const Profile = ({ language, onLanguageChange }: ProfileProps) => {
                 <p className="text-sm text-gray-600 dark:text-gray-300">@{user.username}</p>
               </div>
             </div>
-          </header>
+          </div>
+        </header>
 
-          <div className="flex-1 p-6">
+        <div className="flex-1 p-6">
             {/* Profile Header */}
             <Card className="mb-8 dark:bg-gray-800 dark:border-gray-700">
               <CardContent className="pt-6">
@@ -379,9 +382,8 @@ const Profile = ({ language, onLanguageChange }: ProfileProps) => {
               </CardContent>
             </Card>
           </div>
-        </SidebarInset>
+        </div>
       </div>
-    </SidebarProvider>
   );
 };
 

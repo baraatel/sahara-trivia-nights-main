@@ -71,6 +71,8 @@ CREATE TABLE public.game_answers (
   is_correct BOOLEAN,
   answered_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
   time_taken INTEGER, -- in seconds
+  points_earned INTEGER DEFAULT 0,
+  lifeline_used TEXT CHECK (lifeline_used IN ('hint', 'skip', 'eliminate')),
   UNIQUE(game_id, user_id, question_id)
 );
 
@@ -95,13 +97,13 @@ ALTER TABLE public.user_purchases ENABLE ROW LEVEL SECURITY;
 -- Create RLS policies for categories
 CREATE POLICY "Anyone can view categories" ON public.categories FOR SELECT USING (true);
 CREATE POLICY "Admin can manage categories" ON public.categories FOR ALL USING (
-  EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND email = 'admin@gmail.com')
 );
 
 -- Create RLS policies for questions
 CREATE POLICY "Anyone can view questions" ON public.questions FOR SELECT USING (true);
 CREATE POLICY "Admin can manage questions" ON public.questions FOR ALL USING (
-  EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND email = 'admin@gmail.com')
 );
 
 -- Create RLS policies for games
@@ -132,7 +134,7 @@ CREATE POLICY "Users can submit their own answers" ON public.game_answers FOR IN
 CREATE POLICY "Users can view their own purchases" ON public.user_purchases FOR SELECT USING (user_id = auth.uid());
 CREATE POLICY "Users can make purchases" ON public.user_purchases FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Admin can view all purchases" ON public.user_purchases FOR SELECT USING (
-  EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND email = 'admin@gmail.com')
+  EXISTS (SELECT 1 FROM auth.users WHERE id = auth.uid() AND email = 'admin@gmail.com')
 );
 
 -- Insert sample categories

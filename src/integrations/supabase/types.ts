@@ -351,6 +351,89 @@ export type Database = {
           },
         ]
       }
+      game_packages: {
+        Row: {
+          id: string
+          name_ar: string
+          name_en: string
+          description_ar: string | null
+          description_en: string | null
+          price: number
+          games_count: number
+          is_active: boolean
+          is_popular: boolean
+          sort_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name_ar: string
+          name_en: string
+          description_ar?: string | null
+          description_en?: string | null
+          price: number
+          games_count?: number
+          is_active?: boolean
+          is_popular?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name_ar?: string
+          name_en?: string
+          description_ar?: string | null
+          description_en?: string | null
+          price?: number
+          games_count?: number
+          is_active?: boolean
+          is_popular?: boolean
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      game_package_features: {
+        Row: {
+          id: string
+          package_id: string
+          feature_ar: string
+          feature_en: string
+          icon: string | null
+          sort_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          package_id: string
+          feature_ar: string
+          feature_en: string
+          icon?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          package_id?: string
+          feature_ar?: string
+          feature_en?: string
+          icon?: string | null
+          sort_order?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_package_features_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "game_packages"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       game_purchases: {
         Row: {
           created_at: string
@@ -360,6 +443,7 @@ export type Database = {
           purchased_at: string
           status: string
           user_id: string
+          package_id: string | null
         }
         Insert: {
           created_at?: string
@@ -369,6 +453,7 @@ export type Database = {
           purchased_at?: string
           status?: string
           user_id: string
+          package_id?: string | null
         }
         Update: {
           created_at?: string
@@ -378,8 +463,17 @@ export type Database = {
           purchased_at?: string
           status?: string
           user_id?: string
+          package_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "game_purchases_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "game_packages"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       games: {
         Row: {

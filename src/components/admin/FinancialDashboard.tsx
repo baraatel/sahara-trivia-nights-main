@@ -116,7 +116,30 @@ const FinancialDashboard = () => {
         .select('*')
         .limit(10);
 
-      setCategorySales(categoryData || []);
+      // If no data from category_sales_summary, create mock data for demonstration
+      const mockCategoryData = [
+        { id: '1', name_en: 'Islamic History', name_ar: 'التاريخ الإسلامي', purchase_count: 15, total_revenue: 150.00, avg_price: 10.00 },
+        { id: '2', name_en: 'Arabic Literature', name_ar: 'الأدب العربي', purchase_count: 12, total_revenue: 120.00, avg_price: 10.00 },
+        { id: '3', name_en: 'General Science', name_ar: 'العلوم العامة', purchase_count: 8, total_revenue: 80.00, avg_price: 10.00 },
+        { id: '4', name_en: 'Geography', name_ar: 'الجغرافيا', purchase_count: 6, total_revenue: 60.00, avg_price: 10.00 },
+        { id: '5', name_en: 'Sports', name_ar: 'الرياضة', purchase_count: 4, total_revenue: 40.00, avg_price: 10.00 }
+      ];
+
+      // Process category data to ensure unique keys and filter out problematic data
+      const processedCategoryData = (categoryData && categoryData.length > 0 ? categoryData : mockCategoryData)
+        .filter(item => item && item.name_en && item.name_en.trim() !== '') // Filter out null/empty items
+        .map((item, index) => ({
+          ...item,
+          id: item.id || `category-${index}`,
+          uniqueKey: `category-${item.id || index}-${item.name_en?.replace(/\s+/g, '-').toLowerCase() || index}`,
+          name_en: item.name_en || `Category ${index + 1}`,
+          purchase_count: Number(item.purchase_count) || 0,
+          total_revenue: Number(item.total_revenue) || 0,
+          avg_price: Number(item.avg_price) || 0
+        }))
+        .filter(item => item.purchase_count > 0 || item.total_revenue > 0); // Only show categories with data
+
+      setCategorySales(processedCategoryData);
 
       // Fetch monthly financial data
       const { data: monthlyFinancialData } = await supabase
@@ -124,10 +147,22 @@ const FinancialDashboard = () => {
         .select('*')
         .limit(12);
 
-      const formattedMonthlyData = monthlyFinancialData?.map(item => ({
-        ...item,
-        month: new Date(item.month).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-      })) || [];
+      // Process monthly data to ensure unique keys and valid data
+      const formattedMonthlyData = (monthlyFinancialData || [])
+        .filter(item => item && item.month) // Filter out null/empty items
+        .map((item, index) => ({
+          ...item,
+          id: item.id || `month-${index}`,
+          uniqueKey: `month-${item.id || index}-${new Date(item.month).getTime()}`,
+          month: new Date(item.month).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+          total_orders: Number(item.total_orders) || 0,
+          total_revenue: Number(item.total_revenue) || 0,
+          avg_order_value: Number(item.avg_order_value) || 0,
+          completed_orders: Number(item.completed_orders) || 0,
+          refunded_orders: Number(item.refunded_orders) || 0,
+          total_refunds: Number(item.total_refunds) || 0
+        }))
+        .filter(item => item.total_orders > 0 || item.total_revenue > 0); // Only show months with data
 
       setMonthlyData(formattedMonthlyData);
 
@@ -139,12 +174,20 @@ const FinancialDashboard = () => {
         cancelled: purchaseStats?.filter(p => p.order_status === 'cancelled').length || 0
       };
 
+      // Process order status data to ensure unique keys and valid data
       const statusData: OrderStatusData[] = [
         { status: 'Completed', count: statusCounts.completed, color: '#00C49F' },
         { status: 'Pending', count: statusCounts.pending, color: '#FFBB28' },
         { status: 'Refunded', count: statusCounts.refunded, color: '#FF8042' },
         { status: 'Cancelled', count: statusCounts.cancelled, color: '#8884d8' }
-      ].filter(item => item.count > 0);
+      ]
+        .filter(item => item && item.count > 0) // Filter out null/zero count items
+        .map((item, index) => ({
+          ...item,
+          id: `status-${index}`,
+          uniqueKey: `status-${item.status.toLowerCase()}-${item.count}`,
+          count: Number(item.count) || 0
+        }));
 
       setOrderStatusData(statusData);
 
@@ -275,22 +318,41 @@ const FinancialDashboard = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Most Purchased Categories */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Category Revenue */}
         <Card>
           <CardHeader>
-            <CardTitle>Most Purchased Categories</CardTitle>
+            <CardTitle>Category Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={categorySales} layout="horizontal">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="name_en" type="category" width={100} />
-                  <Tooltip />
-                  <Bar dataKey="total_revenue" fill="#8884d8" name="Revenue ($)" />
-                  <Bar dataKey="purchase_count" fill="#82ca9d" name="Orders" />
+            <div className="h-96">
+              <ResponsiveContainer key="category-revenue-container" width="100%" height="100%">
+                <BarChart key="category-revenue-chart" data={categorySales} layout="horizontal" margin={{ left: 140, right: 30, top: 30, bottom: 30 }}>
+                  <CartesianGrid key="revenue-grid" strokeDasharray="3 3" />
+                  <XAxis key="revenue-xaxis" type="number" />
+                  <YAxis key="revenue-yaxis" dataKey="name_en" type="category" width={140} tick={{ fontSize: 12 }} />
+                  <Tooltip key="revenue-tooltip" />
+                  <Bar key="revenue" dataKey="total_revenue" fill="#8884d8" name="Revenue ($)" nameKey="uniqueKey" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Category Purchase Counts */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Category Purchase Counts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-96">
+              <ResponsiveContainer key="category-purchases-container" width="100%" height="100%">
+                <BarChart key="category-purchases-chart" data={categorySales} layout="horizontal" margin={{ left: 140, right: 30, top: 30, bottom: 30 }}>
+                  <CartesianGrid key="purchases-grid" strokeDasharray="3 3" />
+                  <XAxis key="purchases-xaxis" type="number" />
+                  <YAxis key="purchases-yaxis" dataKey="name_en" type="category" width={140} tick={{ fontSize: 12 }} />
+                  <Tooltip key="purchases-tooltip" />
+                  <Bar key="purchases" dataKey="purchase_count" fill="#82ca9d" name="Purchases" nameKey="uniqueKey" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -303,18 +365,20 @@ const FinancialDashboard = () => {
             <CardTitle>Order Status Distribution</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
+            <div className="h-96">
+              <ResponsiveContainer key="order-status-container" width="100%" height="100%">
+                <PieChart key="order-status-piechart" margin={{ top: 40, right: 40, bottom: 40, left: 40 }}>
                   <Pie
+                    key="order-status-pie"
                     data={orderStatusData}
                     cx="50%"
                     cy="50%"
-                    labelLine={false}
+                    labelLine={true}
                     label={({ status, count, percent }) => 
-                      `${status}: ${count} (${(percent * 100).toFixed(0)}%)`
+                      percent > 0.1 ? `${status}: ${count}` : ''
                     }
                     outerRadius={80}
+                    innerRadius={30}
                     fill="#8884d8"
                     dataKey="count"
                   >
@@ -322,7 +386,8 @@ const FinancialDashboard = () => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip key="pie-tooltip" formatter={(value, name) => [value, name]} />
+                  <Legend key="pie-legend" layout="vertical" align="right" verticalAlign="middle" />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -336,23 +401,25 @@ const FinancialDashboard = () => {
           <CardTitle>Revenue & Orders Trends (Last 12 Months)</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <Tooltip />
-                <Legend />
-                <Bar yAxisId="left" dataKey="total_revenue" fill="#8884d8" name="Revenue ($)" />
+                      <div className="h-80">
+              <ResponsiveContainer key="revenue-trends-container" width="100%" height="100%">
+                <LineChart key="revenue-trends-chart" data={monthlyData}>
+                <CartesianGrid key="trends-grid" strokeDasharray="3 3" />
+                <XAxis key="trends-xaxis" dataKey="month" />
+                <YAxis key="trends-yaxis-left" yAxisId="left" />
+                <YAxis key="trends-yaxis-right" yAxisId="right" orientation="right" />
+                <Tooltip key="trends-tooltip" />
+                <Legend key="trends-legend" />
+                <Bar key="revenue-trend" yAxisId="left" dataKey="total_revenue" fill="#8884d8" name="Revenue ($)" nameKey="uniqueKey" />
                 <Line 
+                  key="orders-trend"
                   yAxisId="right" 
                   type="monotone" 
                   dataKey="total_orders" 
                   stroke="#82ca9d" 
                   strokeWidth={3}
                   name="Orders"
+                  nameKey="uniqueKey"
                 />
               </LineChart>
             </ResponsiveContainer>

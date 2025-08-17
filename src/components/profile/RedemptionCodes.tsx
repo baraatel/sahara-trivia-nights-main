@@ -31,7 +31,11 @@ const RedemptionCodes = () => {
   const fetchRedemptionHistory = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        console.log('No user found, skipping redemption history fetch');
+        setRedemptionHistory([]);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('code_redemptions')
@@ -47,10 +51,16 @@ const RedemptionCodes = () => {
         .eq('user_id', user.id)
         .order('redeemed_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error fetching redemption history:', error);
+        setRedemptionHistory([]);
+        return;
+      }
+      
       setRedemptionHistory(data || []);
     } catch (error) {
       console.error('Error fetching redemption history:', error);
+      setRedemptionHistory([]);
     } finally {
       setLoading(false);
     }
@@ -79,7 +89,25 @@ const RedemptionCodes = () => {
         .eq('is_active', true)
         .single();
 
-      if (codeError || !codeData) {
+      if (codeError) {
+        console.error('Error checking redemption code:', codeError);
+        if (codeError.code === 'PGRST116') {
+          toast({
+            title: "Invalid Code",
+            description: "The redemption code does not exist",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to validate redemption code. Please try again.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
+      if (!codeData) {
         toast({
           title: "Invalid Code",
           description: "The redemption code is invalid or has expired",
@@ -312,55 +340,65 @@ const RedemptionCodes = () => {
           <CardTitle>Redemption History</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Code</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Value</TableHead>
-                <TableHead>Redeemed At</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {redemptionHistory.map((redemption: any) => (
-                <TableRow key={redemption.id}>
-                  <TableCell className="font-mono">
-                    <div className="flex items-center gap-2">
-                      {redemption.redemption_codes?.code}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyToClipboard(redemption.redemption_codes?.code)}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge>{getCodeTypeLabel(redemption.redemption_codes?.code_type)}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    {getCodeValueLabel(redemption.redemption_codes)}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(redemption.redeemed_at).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-green-600">Redeemed</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          
-          {redemptionHistory.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              No redemption history yet
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-gray-500">Loading redemption history...</p>
             </div>
+          ) : (
+            <>
+              <Table className="[&_tr]:border-b [&_tr]:border-gray-100 [&_td]:py-4 [&_th]:py-4">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="py-4 font-medium text-center">Code</TableHead>
+                    <TableHead className="py-4 font-medium text-center">Type</TableHead>
+                    <TableHead className="py-4 font-medium text-center">Value</TableHead>
+                    <TableHead className="py-4 font-medium text-center">Redeemed At</TableHead>
+                    <TableHead className="py-4 font-medium text-center">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {redemptionHistory.map((redemption: any) => (
+                    <TableRow key={redemption.id}>
+                      <TableCell className="align-middle py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="font-mono text-sm">{redemption.redemption_codes?.code}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => copyToClipboard(redemption.redemption_codes?.code)}
+                            className="h-6 w-6 p-0 flex items-center justify-center"
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                      <TableCell className="align-middle py-4 text-center">
+                        <Badge className="text-xs">{getCodeTypeLabel(redemption.redemption_codes?.code_type)}</Badge>
+                      </TableCell>
+                      <TableCell className="align-middle py-4 text-center">
+                        <span className="text-sm font-medium">{getCodeValueLabel(redemption.redemption_codes)}</span>
+                      </TableCell>
+                      <TableCell className="align-middle py-4 text-center">
+                        <span className="text-sm text-gray-600">{new Date(redemption.redeemed_at).toLocaleDateString()}</span>
+                      </TableCell>
+                      <TableCell className="align-middle py-4 text-center">
+                        <div className="flex items-center justify-center gap-1">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span className="text-sm text-green-600">Redeemed</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              
+              {redemptionHistory.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  No redemption history yet
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

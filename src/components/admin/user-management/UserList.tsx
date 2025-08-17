@@ -118,73 +118,74 @@ const UserList = ({
 
   return (
     <div className="space-y-4">
-      <Table>
+      <Table className="[&_tr]:border-b [&_tr]:border-gray-100 [&_td]:py-4 [&_th]:py-4">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12">
+            <TableHead className="w-12 py-4 font-medium text-center">
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={onSelectAll}
                 aria-label="Select all"
               />
             </TableHead>
-            <TableHead>User</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Games</TableHead>
-            <TableHead>Purchases</TableHead>
-            <TableHead>Joined</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="py-4 font-medium text-center">User</TableHead>
+            <TableHead className="py-4 font-medium text-center">Status</TableHead>
+            <TableHead className="py-4 font-medium text-center">Games</TableHead>
+            <TableHead className="py-4 font-medium text-center">Purchases</TableHead>
+            <TableHead className="py-4 font-medium text-center">Joined</TableHead>
+            <TableHead className="py-4 font-medium text-center">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id} className="hover:bg-gray-50">
-              <TableCell>
+              <TableCell className="align-middle py-4 text-center">
                 <Checkbox
                   checked={selectedUsers.includes(user.id)}
                   onCheckedChange={(checked) => onUserSelect(user.id, !!checked)}
                   aria-label={`Select ${user.full_name}`}
                 />
               </TableCell>
-              <TableCell>
-                <div className="flex items-center space-x-3">
+              <TableCell className="align-middle py-4 text-center">
+                <div className="flex items-center justify-center space-x-3">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user.avatar_url} alt={user.full_name} />
                     <AvatarFallback>{getInitials(user.full_name)}</AvatarFallback>
                   </Avatar>
-                  <div>
+                  <div className="text-center">
                     <div className="font-medium">{user.full_name}</div>
                     <div className="text-sm text-gray-500">@{user.username}</div>
                     <div className="text-xs text-gray-400">{user.email}</div>
                   </div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="align-middle py-4 text-center">
                 {getActivityBadge(user)}
               </TableCell>
-              <TableCell>
+              <TableCell className="align-middle py-4 text-center">
                 <div className="text-sm">
                   <div>{user.stats?.games_played || 0} played</div>
                   <div className="text-gray-500">{user.stats?.total_score || 0} pts</div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="align-middle py-4 text-center">
                 <div className="text-sm">
                   <div>{user.purchase_count || 0} purchases</div>
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="align-middle py-4 text-center">
                 <div className="text-sm text-gray-500">
                   {format(new Date(user.created_at), 'MMM dd, yyyy')}
                 </div>
               </TableCell>
-              <TableCell className="text-right">
-                <div className="flex items-center justify-end space-x-2">
+              <TableCell className="align-middle py-4 text-center">
+                <div className="flex items-center justify-center space-x-2">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onUserClick(user)}
-                    className="h-8 w-8 p-0"
+                    className="h-8 w-8 p-0 flex items-center justify-center"
+                    title="View Details"
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
@@ -193,7 +194,8 @@ const UserList = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50 flex items-center justify-center"
+                        title="Delete User"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

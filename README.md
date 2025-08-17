@@ -1,73 +1,158 @@
-# Welcome to your Lovable project
+# Sahara Trivia Nights - نظام إدارة الحزم
 
-## Project info
+## 🎯 نظرة عامة
 
-**URL**: https://lovable.dev/projects/a10d26e7-e1a7-4148-916e-626bf5f7850a
+تم تطوير نظام إدارة الحزم الكامل لـ Sahara Trivia Nights، مما يتيح للمديرين التحكم في حزم الألعاب والتسعير والميزات.
 
-## How can I edit this code?
+## ✨ الميزات الجديدة
 
-There are several ways of editing your application.
+### 🎮 نظام إدارة الحزم
+- ✅ إضافة حزم جديدة مع تحديد السعر وعدد الألعاب
+- ✅ تعديل الحزم الموجودة
+- ✅ حذف الحزم
+- ✅ تفعيل/إلغاء تفعيل الحزم
+- ✅ تحديد الحزم الأكثر شعبية
 
-**Use Lovable**
+### 🎨 إدارة الميزات
+- ✅ إضافة ميزات لكل حزمة (عربي/إنجليزي)
+- ✅ دعم أيقونات مختلفة للميزات
+- ✅ ترتيب الميزات حسب الأهمية
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a10d26e7-e1a7-4148-916e-626bf5f7850a) and start prompting.
+### 💰 التسعير المرن
+- ✅ أسعار مختلفة لكل حزمة
+- ✅ عرض التوفير التلقائي
+- ✅ حساب عدد الألعاب في كل حزمة
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 التشغيل السريع
 
-**Use your preferred IDE**
+### الخيار 1: Docker (محلي)
+```bash
+# 1. تأكد من تشغيل Docker Desktop
+# 2. تشغيل Supabase
+npx supabase start
+npx supabase db push
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 3. تشغيل التطبيق
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### الخيار 2: Supabase Cloud (بدون Docker)
+```bash
+# 1. اتبع دليل Supabase Cloud
+# راجع: SUPABASE_CLOUD_SETUP.md
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+# 2. تشغيل التطبيق
+npm install
+npm run dev
+```
 
-**Use GitHub Codespaces**
+## 📍 الوصول للتطبيق
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **التطبيق الرئيسي**: http://localhost:8092
+- **لوحة الإدارة**: http://localhost:8092/admin
+- **Supabase Studio**: http://localhost:54323 (محلي) أو https://supabase.com/dashboard (سحابة)
 
-## What technologies are used for this project?
+## 🎯 الحزم الافتراضية
 
-This project is built with:
+| الحزمة | السعر | الألعاب | التوفير |
+|--------|-------|---------|---------|
+| لعبة واحدة | $9.99 | 1 | - |
+| 3 ألعاب | $26.99 | 3 | $2.98 |
+| 5 ألعاب | $42.99 | 5 | $7.96 |
+| 10 ألعاب | $74.99 | 10 | $24.91 |
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🔧 استكشاف الأخطاء
 
-## How can I deploy this project?
+### مشاكل Docker
+إذا واجهت مشاكل مع Docker:
+1. **راجع**: `DOCKER_TROUBLESHOOTING.md`
+2. **أو استخدم**: `SUPABASE_CLOUD_SETUP.md`
 
-Simply open [Lovable](https://lovable.dev/projects/a10d26e7-e1a7-4148-916e-626bf5f7850a) and click on Share -> Publish.
+### مشاكل شائعة
+- **المنفذ مشغول**: التطبيق سيجد منفذ آخر تلقائياً
+- **خطأ في الهجرات**: تأكد من تشغيل `npx supabase db push`
+- **مشاكل في الاتصال**: تحقق من إعدادات الشبكة
 
-## Can I connect a custom domain to my Lovable project?
+## 📁 الملفات المهمة
 
-Yes, you can!
+### التوثيق
+- `README_PACKAGE_SYSTEM.md` - دليل شامل لنظام الحزم
+- `QUICK_START.md` - دليل التشغيل السريع
+- `DOCKER_TROUBLESHOOTING.md` - حل مشاكل Docker
+- `SUPABASE_CLOUD_SETUP.md` - إعداد Supabase Cloud
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### قاعدة البيانات
+- `supabase/migrations/20250818000000_game_packages.sql`
+- `supabase/migrations/20250818000001_package_improvements.sql`
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### المكونات
+- `src/components/admin/PackageManager.tsx`
+- `src/components/admin/PackageStats.tsx`
+
+## 🛡️ الأمان
+
+- **RLS Policies**: تم تطبيق سياسات أمان مناسبة
+- **التحقق من الصلاحيات**: فقط المديرون يمكنهم إدارة الحزم
+- **التحقق من البيانات**: التحقق من صحة البيانات قبل الحفظ
+- **تسجيل التغييرات**: تسجيل جميع التغييرات في الحزم
+
+## 📊 الأداء
+
+- **Indexes**: تم إضافة فهارس لتحسين الأداء
+- **Constraints**: قيود لضمان صحة البيانات
+- **Triggers**: triggers لتحديث البيانات تلقائياً
+
+## 🚀 التطوير المستقبلي
+
+### الميزات المقترحة
+- [ ] خصومات موسمية
+- [ ] حزم مخصصة حسب الفئات
+- [ ] تجديد الحزم
+- [ ] أكواد خصم
+- [ ] إشعارات عند تغيير الحزم
+
+### التحسينات التقنية
+- [ ] Cache للحزم النشطة
+- [ ] Webhooks للتكامل
+- [ ] API للحزم
+- [ ] تحليلات متقدمة
+
+## 📞 الدعم
+
+للمساعدة أو الإبلاغ عن مشاكل:
+
+1. راجع التوثيق المرفق
+2. تحقق من سجلات الأخطاء
+3. اتصل بفريق التطوير
+
+## 🎉 الخلاصة
+
+تم تطوير نظام إدارة الحزم بنجاح مع جميع الميزات المطلوبة:
+
+✅ **إدارة الحزم**: إضافة، تعديل، حذف، تفعيل/إلغاء تفعيل
+✅ **إدارة الميزات**: ميزات عربية/إنجليزية مع أيقونات
+✅ **التسعير المرن**: أسعار مختلفة وخصومات تلقائية
+✅ **واجهة المستخدم**: صفحات محدثة ومحسنة
+✅ **الأمان**: RLS policies وتسجيل التغييرات
+✅ **الأداء**: فهارس وقيود محسنة
+✅ **التوثيق**: دليل شامل للاستخدام
+
+**النظام جاهز للاستخدام في الإنتاج! 🎉**
+
+---
+
+## 📋 روابط سريعة
+
+- **التطبيق**: http://localhost:8092
+- **لوحة الإدارة**: http://localhost:8092/admin
+- **Supabase Studio**: http://localhost:54323
+- **Docker Desktop**: https://www.docker.com/products/docker-desktop/
+- **Supabase Cloud**: https://supabase.com
+
+## 📅 معلومات المشروع
+
+- **المطور**: فريق Sahara Trivia Nights
+- **التاريخ**: أغسطس 2025
+- **الإصدار**: 1.0.0
+- **الحالة**: جاهز للإنتاج

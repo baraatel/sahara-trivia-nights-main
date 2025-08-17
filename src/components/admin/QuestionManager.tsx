@@ -15,19 +15,13 @@ const QuestionManager = () => {
   const [formData, setFormData] = useState({
     category_id: '',
     question_ar: '',
-    question_en: '',
     option_a_ar: '',
-    option_a_en: '',
     option_b_ar: '',
-    option_b_en: '',
     option_c_ar: '',
-    option_c_en: '',
     option_d_ar: '',
-    option_d_en: '',
     correct_answer: 'A',
     difficulty_level: 1,
-    explanation_ar: '',
-    explanation_en: ''
+    explanation_ar: ''
   });
   const { toast } = useToast();
 
@@ -42,7 +36,7 @@ const QuestionManager = () => {
       const { data, error } = await supabase
         .from('categories')
         .select('*')
-        .order('name_en');
+        .order('name_ar');
 
       if (error) {
         console.error("Categories fetch error:", error);
@@ -53,11 +47,11 @@ const QuestionManager = () => {
       setCategories(data || []);
     } catch (error) {
       console.error("Categories fetch failed:", error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch categories",
-        variant: "destructive",
-      });
+              toast({
+          title: "خطأ",
+          description: "فشل في تحميل الفئات",
+          variant: "destructive",
+        });
     }
   };
 
@@ -69,7 +63,7 @@ const QuestionManager = () => {
         .from('questions')
         .select(`
           *,
-          categories (name_ar, name_en)
+          categories (name_ar)
         `)
         .order('created_at', { ascending: false });
 
@@ -82,11 +76,11 @@ const QuestionManager = () => {
       setQuestions(data || []);
     } catch (error) {
       console.error("Questions fetch failed:", error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch questions",
-        variant: "destructive",
-      });
+              toast({
+          title: "خطأ",
+          description: "فشل في تحميل الأسئلة",
+          variant: "destructive",
+        });
     } finally {
       setLoading(false);
     }
@@ -105,8 +99,8 @@ const QuestionManager = () => {
         if (error) throw error;
         
         toast({
-          title: "Success",
-          description: "Question updated successfully",
+          title: "نجح",
+          description: "تم تحديث السؤال بنجاح",
         });
       } else {
         const { error } = await supabase
@@ -116,8 +110,8 @@ const QuestionManager = () => {
         if (error) throw error;
         
         toast({
-          title: "Success",
-          description: "Question created successfully",
+          title: "نجح",
+          description: "تم إنشاء السؤال بنجاح",
         });
       }
 
@@ -139,7 +133,7 @@ const QuestionManager = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this question?')) return;
+    if (!confirm('هل أنت متأكد من حذف هذا السؤال؟')) return;
 
     try {
       const { error } = await supabase
@@ -149,10 +143,10 @@ const QuestionManager = () => {
 
       if (error) throw error;
       
-      toast({
-        title: "Success",
-        description: "Question deleted successfully",
-      });
+              toast({
+          title: "نجح",
+          description: "تم حذف السؤال بنجاح",
+        });
       
       fetchQuestions();
     } catch (error) {
@@ -168,19 +162,13 @@ const QuestionManager = () => {
     setFormData({
       category_id: '',
       question_ar: '',
-      question_en: '',
       option_a_ar: '',
-      option_a_en: '',
       option_b_ar: '',
-      option_b_en: '',
       option_c_ar: '',
-      option_c_en: '',
       option_d_ar: '',
-      option_d_en: '',
       correct_answer: 'A',
       difficulty_level: 1,
-      explanation_ar: '',
-      explanation_en: ''
+      explanation_ar: ''
     });
     setEditingId(null);
     setShowAddForm(false);
@@ -193,31 +181,25 @@ const QuestionManager = () => {
     const text = await file.text();
     const lines = text.split('\n');
     
-    const questions = [];
-    for (let i = 1; i < lines.length; i++) {
-      if (lines[i].trim()) {
-        const values = lines[i].split(',');
-        if (values.length >= 14) {
-          questions.push({
-            category_id: values[0],
-            question_ar: values[1],
-            question_en: values[2],
-            option_a_ar: values[3],
-            option_a_en: values[4],
-            option_b_ar: values[5],
-            option_b_en: values[6],
-            option_c_ar: values[7],
-            option_c_en: values[8],
-            option_d_ar: values[9],
-            option_d_en: values[10],
-            correct_answer: values[11],
-            difficulty_level: parseInt(values[12]) || 1,
-            explanation_ar: values[13] || '',
-            explanation_en: values[14] || ''
-          });
+            const questions = [];
+        for (let i = 1; i < lines.length; i++) {
+          if (lines[i].trim()) {
+            const values = lines[i].split(',');
+            if (values.length >= 8) {
+              questions.push({
+                category_id: values[0],
+                question_ar: values[1],
+                option_a_ar: values[2],
+                option_b_ar: values[3],
+                option_c_ar: values[4],
+                option_d_ar: values[5],
+                correct_answer: values[6],
+                difficulty_level: parseInt(values[7]) || 1,
+                explanation_ar: values[8] || ''
+              });
+            }
+          }
         }
-      }
-    }
 
     try {
       const { error } = await supabase
@@ -226,10 +208,10 @@ const QuestionManager = () => {
 
       if (error) throw error;
       
-      toast({
-        title: "Success",
-        description: `${questions.length} questions imported successfully`,
-      });
+              toast({
+          title: "نجح",
+          description: `تم استيراد ${questions.length} سؤال بنجاح`,
+        });
       
       fetchQuestions();
     } catch (error) {
@@ -245,19 +227,13 @@ const QuestionManager = () => {
     const headers = [
       'category_id',
       'question_ar',
-      'question_en', 
       'option_a_ar',
-      'option_a_en',
       'option_b_ar',
-      'option_b_en',
       'option_c_ar',
-      'option_c_en',
       'option_d_ar',
-      'option_d_en',
       'correct_answer',
       'difficulty_level',
-      'explanation_ar',
-      'explanation_en'
+      'explanation_ar'
     ];
     
     const csvContent = headers.join(',') + '\n';
@@ -265,7 +241,7 @@ const QuestionManager = () => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'questions_template.csv';
+    a.download = 'questions_template_arabic.csv';
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -278,7 +254,7 @@ const QuestionManager = () => {
     return (
       <div className="text-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-2 text-gray-600">Loading questions...</p>
+        <p className="mt-2 text-gray-600">جاري تحميل الأسئلة...</p>
       </div>
     );
   }

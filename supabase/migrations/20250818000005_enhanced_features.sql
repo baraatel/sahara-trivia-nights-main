@@ -52,7 +52,7 @@ CREATE POLICY "Admin can view all game purchases"
 ON public.game_purchases 
 FOR SELECT 
 USING (EXISTS (
-  SELECT 1 FROM users 
+  SELECT 1 FROM public.users 
   WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com'
 ));
 
@@ -142,7 +142,7 @@ FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Admin can manage all category access" ON public.user_category_access
 FOR ALL USING (
   EXISTS (
-    SELECT 1 FROM users 
+    SELECT 1 FROM public.users 
     WHERE users.id = auth.uid() 
     AND users.email = 'admin@gmail.com'
   )
@@ -193,7 +193,7 @@ FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Admin can manage all game access" ON public.user_game_access
 FOR ALL USING (
   EXISTS (
-    SELECT 1 FROM users 
+    SELECT 1 FROM public.users 
     WHERE users.id = auth.uid() 
     AND users.email = 'admin@gmail.com'
   )
@@ -212,7 +212,7 @@ FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Admin can manage all credits" ON public.user_credits
 FOR ALL USING (
   EXISTS (
-    SELECT 1 FROM users 
+    SELECT 1 FROM public.users 
     WHERE users.id = auth.uid() 
     AND users.email = 'admin@gmail.com'
   )
@@ -231,7 +231,7 @@ FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Admin can manage all premium status" ON public.user_premium
 FOR ALL USING (
   EXISTS (
-    SELECT 1 FROM users 
+    SELECT 1 FROM public.users 
     WHERE users.id = auth.uid() 
     AND users.email = 'admin@gmail.com'
   )

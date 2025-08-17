@@ -16,9 +16,9 @@ ALTER TABLE public.admin_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admin can manage settings" ON public.admin_settings
 FOR ALL USING (
   EXISTS (
-    SELECT 1 FROM users 
-    WHERE users.id = auth.uid() 
-    AND users.email = 'admin@gmail.com'
+    SELECT 1 FROM auth.users 
+    WHERE auth.users.id = auth.uid() 
+    AND auth.users.email = 'admin@gmail.com'
   )
 );
 
@@ -47,9 +47,9 @@ FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Admin can view all purchases" ON public.user_game_purchases
 FOR SELECT USING (
   EXISTS (
-    SELECT 1 FROM users 
-    WHERE users.id = auth.uid() 
-    AND users.email = 'admin@gmail.com'
+    SELECT 1 FROM auth.users 
+    WHERE auth.users.id = auth.uid() 
+    AND auth.users.email = 'admin@gmail.com'
   )
 );
 
@@ -88,8 +88,8 @@ FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Admin can view all stats" ON public.user_stats
 FOR SELECT USING (
   EXISTS (
-    SELECT 1 FROM users 
-    WHERE users.id = auth.uid() 
-    AND users.email = 'admin@gmail.com'
+    SELECT 1 FROM auth.users 
+    WHERE auth.users.id = auth.uid() 
+    AND auth.users.email = 'admin@gmail.com'
   )
 );

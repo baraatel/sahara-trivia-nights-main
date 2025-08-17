@@ -28,16 +28,16 @@ CREATE POLICY "Admin can view all refund history"
 ON public.refund_history 
 FOR SELECT 
 USING (EXISTS (
-  SELECT 1 FROM users 
-  WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com'
+  SELECT 1 FROM auth.users 
+  WHERE auth.users.id = auth.uid() AND auth.users.email = 'admin@gmail.com'
 ));
 
 CREATE POLICY "Admin can manage refund history" 
 ON public.refund_history 
 FOR ALL 
 USING (EXISTS (
-  SELECT 1 FROM users 
-  WHERE users.id = auth.uid() AND users.email = 'admin@gmail.com'
+  SELECT 1 FROM auth.users 
+  WHERE auth.users.id = auth.uid() AND auth.users.email = 'admin@gmail.com'
 ));
 
 -- Update existing purchases to have order_ids and proper status

@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { 
   User, 
   Trophy, 
@@ -10,17 +11,13 @@ import {
   X
 } from "lucide-react";
 import {
-  Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-  SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -34,8 +31,7 @@ interface ProfileSidebarProps {
 }
 
 const ProfileSidebar = ({ activeTab, setActiveTab, language, onLanguageChange }: ProfileSidebarProps) => {
-  const { state, toggleSidebar } = useSidebar();
-  const isCollapsed = state === "collapsed";
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const text = {
     ar: {
@@ -76,7 +72,7 @@ const ProfileSidebar = ({ activeTab, setActiveTab, language, onLanguageChange }:
   ];
 
   return (
-    <Sidebar className="border-r bg-white dark:bg-gray-900 shadow-sm">
+    <div className={`${isCollapsed ? 'w-16' : 'w-64'} border-l border-r-0 rtl:border-r rtl:border-l-0 bg-white dark:bg-gray-900 shadow-sm h-full transition-all duration-300 ${language === 'ar' ? 'sidebar-rtl' : ''}`}>
       <SidebarHeader className="border-b dark:border-gray-700 p-4">
         <div className="flex items-center justify-between mb-4">
           {!isCollapsed && (
@@ -87,7 +83,7 @@ const ProfileSidebar = ({ activeTab, setActiveTab, language, onLanguageChange }:
             <Button
               variant="ghost"
               size="icon"
-              onClick={toggleSidebar}
+              onClick={() => setIsCollapsed(!isCollapsed)}
               className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/20"
             >
               {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
@@ -103,33 +99,36 @@ const ProfileSidebar = ({ activeTab, setActiveTab, language, onLanguageChange }:
           />
         )}
       </SidebarHeader>
-      
+
       <SidebarContent className="bg-gray-50 dark:bg-gray-800">
         <SidebarGroup>
+          <SidebarGroupLabel className={`${isCollapsed ? "sr-only" : ""} text-gray-600 dark:text-gray-300`}>
+            {t.profile}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    isActive={activeTab === item.id}
+                  <Button
+                    variant="ghost"
                     onClick={() => setActiveTab(item.id)}
                     className={`w-full justify-start transition-colors ${
                       activeTab === item.id 
                         ? "bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100" 
                         : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
                     }`}
-                    tooltip={isCollapsed ? item.label : undefined}
+                    title={isCollapsed ? item.label : undefined}
                   >
                     <item.icon className="h-4 w-4" />
-                    {!isCollapsed && <span>{item.label}</span>}
-                  </SidebarMenuButton>
+                    {!isCollapsed && <span className="ml-2">{item.label}</span>}
+                  </Button>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-    </Sidebar>
+    </div>
   );
 };
 
